@@ -12,9 +12,24 @@
 #include "buffer/replacer.h"
 #include "hash/extendible_hash.h"
 
+#include <memory>
+#include <mutex>
+#include <unordered_map>
+
 namespace scudb {
 
 template <typename T> class LRUReplacer : public Replacer<T> {
+private:
+    //node of double list
+    struct sNode{
+        //default constructor
+        sNode() {data = 0 ; ptrPrev = nullptr; ptrNext = nullptr;}
+        sNode(T data) : data(data){};
+        T data;
+        std::shared_ptr<sNode> ptrPrev;
+        std::shared_ptr<sNode> ptrNext;
+    };
+
 public:
   // do not change public interface
   LRUReplacer();
@@ -31,6 +46,10 @@ public:
 
 private:
   // add your member variables here
+  std::shared_ptr<sNode> mHead;
+  std::shared_ptr<sNode> mTail;
+  std::unordered_map<T,std::shared_ptr<sNode>> mDataMap;
+  mutable std::mutex mLatch;
 };
 
 } // namespace scudb

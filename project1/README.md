@@ -1,5 +1,20 @@
 # Chuangye Yan's ReadME
+## Test result
+### Task1
+![img](./readmeSrc/Task1.png)
 
+### Task2
+LRU(Least recently used)算法原理的基本概念
+是当内存的剩余的可用空间不够时,缓冲区尽可能的先保留使用者最常使用的数据,换句话说就是优先清除”较不常使用的数据”,并释放其空间.之所以”较不常使用的数据”要用引号是因为这里判断所谓的较不常使用的标准是人为的、不严格的   
+LRU淘汰过程原理如下图所示：
+![img](./readmeSrc/Task2-LRU-theory.png)
+
+<br>
+
+Task2-testResult
+![img](./readmeSrc/Task2-result.png)
+
+### Task3
 
 
 
