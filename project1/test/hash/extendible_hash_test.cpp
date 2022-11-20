@@ -6,6 +6,7 @@
 
 #include "hash/extendible_hash.h"
 #include "gtest/gtest.h"
+#include <memory>
 
 namespace scudb {
 
