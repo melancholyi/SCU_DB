@@ -14,7 +14,8 @@ LRU淘汰过程原理如下图所示：
 Task2-testResult
 ![img](./readmeSrc/Task2-result.png)
 
-### Task3
+### Task3-Result
+![img](./readmeSrc/Task3-result.png)
 
 
 
