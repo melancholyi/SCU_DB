@@ -23,6 +23,7 @@ LRU淘汰过程原理如下图所示：
 ![img](./readmeSrc/Task1-teacherTest.png)
 
 ### Test2 result - projectSol's newTest
+![img](./readmeSrc/Task2-teacherTest.png)
 
 ### Test3 result - projectSol's newTest
 
