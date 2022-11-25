@@ -4,12 +4,14 @@
 
 #include <thread>
 #include <random>
-
 #include "hash/extendible_hash.h"
 #include "gtest/gtest.h"
+#include "common/logger.h"
+
 
 namespace scudb {
 
+    //////////////// OK
     TEST(ExtendibleHashTest, SampleTest) {
         // set leaf size as 2
         ExtendibleHash<int, std::string> *test =
@@ -49,6 +51,7 @@ namespace scudb {
         delete test;
     }
 
+    /////////////////OK
     TEST(ExtendibleHashTest, SampleTest2) {
         // set leaf size as 2
         ExtendibleHash<int, std::string> *test =
@@ -105,6 +108,8 @@ namespace scudb {
         delete test;
     }
 // first split increase global depth from 0 to 3
+
+    ////////////////OK
     TEST(ExtendibleHashTest, BasicDepthTest) {
         // set leaf size as 2
         ExtendibleHash<int, std::string> *test =
@@ -146,43 +151,12 @@ namespace scudb {
         EXPECT_EQ(2, test->GetLocalDepth(5));
         delete test;
     }
+
+    /////////////// ERROR
 #define TEST_NUM 1000
 #define BUCKET_SIZE 64
-    TEST(ExtendibleHashTest, BasicRandomTest) {
-        ExtendibleHash<int, int> *test = new ExtendibleHash<int, int>();
 
-        // insert
-        int seed = time(nullptr);
-        std::cerr << "seed: " << seed << std::endl;
-        std::default_random_engine engine(seed);
-        std::uniform_int_distribution<int> distribution(0, TEST_NUM);
-        std::map<int, int> comparator;
-
-        for (int i = 0; i < TEST_NUM; ++i) {
-            auto item = distribution(engine);
-            comparator[item] = item;
-            //printf("%d,",item);
-            test->Insert(item, item);
-            //std::cerr << std::dec << item << std::hex << "( 0x" << item << " )" << std::endl;
-        }
-        //printf("\n");
-
-        // compare result
-        int value = 0;
-        for (auto i: comparator) {
-            test->Find(i.first, value);
-            //printf("%d,%d\n",,i.first);
-            EXPECT_EQ(i.first, value);
-            // delete
-            EXPECT_EQ(1, test->Remove(value));
-            // find again will fail
-            value = 0;
-            EXPECT_EQ(0, test->Find(i.first, value));
-        }
-
-        delete test;
-    }
-
+    //////////////ok
     TEST(ExtendibleHashTest, LargeRandomInsertTest) {
         // set leaf size as 2
         ExtendibleHash<int, int> *test =
@@ -190,9 +164,9 @@ namespace scudb {
 
         int seed = 0;
 
-        for (size_t i=0; i<100000; i++) {
-            srand(time(0)+i);
-            if (random()%3) {
+        for (size_t i = 0; i < 100000; i++) {
+            srand(time(0) + i);
+            if (random() % 3) {
                 test->Insert(seed, seed);
                 seed++;
             } else {
@@ -208,34 +182,34 @@ namespace scudb {
         delete test;
     }
 
+    ////////////////// OK
     TEST(ExtendibleHashTest, RandomInsertAndDeleteTest) {
         // set leaf size as 2
         ExtendibleHash<int, int> *test =
                 new ExtendibleHash<int, int>(10);
 
-        for (int i=0; i<1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             test->Insert(i, i);
         }
 
-        for (int i=0; i<1000; i++) {
-            srand(time(0)+i);
-            if (rand()%2==0) {
+        for (int i = 0; i < 1000; i++) {
+            srand(time(0) + i);
+            if (rand() % 2 == 0) {
                 test->Remove(i);
                 int value;
                 EXPECT_NE(test->Find(i, value), true);
             } else {
-                test->Insert(i, i+2);
+                test->Insert(i, i + 2);
                 int value;
                 EXPECT_EQ(test->Find(i, value), true);
-                EXPECT_EQ(value, i+2);
+                EXPECT_EQ(value, i + 2);
             }
         }
 
         delete test;
     }
 
-
-
+    ///////////////// OK
     TEST(ExtendibleHashTest, ConcurrentInsertTest) {
         const int num_runs = 50;
         const int num_threads = 3;
@@ -260,6 +234,7 @@ namespace scudb {
         }
     }
 
+    ///////////////// ok
     TEST(ExtendibleHashTest, ConcurrentRemoveTest) {
         const int num_threads = 5;
         const int num_runs = 50;
@@ -267,10 +242,9 @@ namespace scudb {
             std::shared_ptr<ExtendibleHash<int, int>> test{new ExtendibleHash<int, int>(2)};
             std::vector<std::thread> threads;
             std::vector<int> values{0, 10, 16, 32, 64};
-            for (int value : values) {
+            for (int value: values) {
                 test->Insert(value, value);
             }
-
             EXPECT_EQ(test->GetGlobalDepth(), 6);
             for (int tid = 0; tid < num_threads; tid++) {
                 threads.push_back(std::thread([tid, &test, &values]() {
@@ -290,5 +264,46 @@ namespace scudb {
             EXPECT_EQ(1, test->Find(4, val));
         }
     }
+
+
+    TEST(ExtendibleHashTest, BasicRandomTest) {
+        ExtendibleHash<int, int> *test = new ExtendibleHash<int, int>(2);
+        // insert
+        int seed = time(nullptr);
+        std::cerr << "DEBUG:seed: " << seed << std::endl;
+        std::default_random_engine engine(seed);
+        std::uniform_int_distribution<int> distribution(0, TEST_NUM);
+        std::map<int, int> comparator;
+
+        std::cout<<"DEBUG:begin to insert"<<std::endl;
+
+        for (int i = 0; i < TEST_NUM; ++i) {
+            auto item = distribution(engine);
+            comparator[item] = item;
+            std::cout<<"DEBUG:begin to insert "<<item<<" item"<<std::endl;
+            test->Insert(item, item);
+            std::cout<<"DEBUG:insert success"<<std::endl;
+
+            //std::cerr << std::dec << item << std::hex << "( 0x" << item << " )" << std::endl;
+        }
+        //printf("\n");
+
+        // compare result
+        int value = 0;
+        for (auto i: comparator) {
+            test->Find(i.first, value);
+            //printf("%d,%d\n",,i.first);
+            EXPECT_EQ(i.first, value);
+            // delete
+            EXPECT_EQ(1, test->Remove(value));
+            // find again will fail
+            value = 0;
+            EXPECT_EQ(0, test->Find(i.first, value));
+        }
+        delete test;
+    }
+
+
+
 
 } // namespace scudb

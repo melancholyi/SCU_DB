@@ -1,7 +1,7 @@
 # Chuangye Yan's ReadME
 ## Test result
 ## 以下是工程原版的test结果
-### Task1
+### Task1-result
 ![img](./readmeSrc/Task1.png)
 
 ### Task2
@@ -12,15 +12,44 @@ LRU淘汰过程原理如下图所示：
 
 <br>
 
-### Task2-testResult
+### Task2-result
 ![img](./readmeSrc/Task2-result.png)
 
-### Task3-Result
+### Task3-result
 ![img](./readmeSrc/Task3-result.png)
 
 ## 以下是老师发的答案中的test测试结果
 ### Test1 result - projectSol's newTest
-![img](./readmeSrc/Task1-teacherTest.png)
+
+---
+直接使用原版，copy过来会进行这个报错，如下图所示：
+![img](./readmeSrc/Task1New-error.png)
+---
+因此尝试再去检查了下写的extend-hash类代码，但是没有发现什么逻辑上的问
+题，因此转而怀疑test代码是不是有问题，采取一个一个TEST进行测试，发现8个
+test中除了BasicRandomTest都能跑通，因此之前出现错误的原因是进行BasicRandomTest
+时引起系统中断导致程序终止，才导致后续能测试成功的也无法成功。
+
+---
+将BasicRandomTest放在最后,并添加交互DEBUG语句.  
+交互的代码如下所示：  
+![img](./readmeSrc/Task1New-debug.png)
+
+<br>
+
+debug结果为：
+![img](./readmeSrc/Task1New-DebugResult.png)
+通过上述debug信息可以得出是hash表的insert失败了，但是在其他测试中都没有失败，因此猜想是类实例化失败，参考其他测试代码，
+修改实例化构造方式，代码如下所示：
+```cpp
+//调用有参构造函数
+    TEST(ExtendibleHashTest, BasicRandomTest) {
+        ExtendibleHash<int, int> *test = new ExtendibleHash<int, int>(2);
+```
+
+---
+最终顺利通过测试
+![img](./readmeSrc/Task1New-insertOK.png)
 
 ### Test2 result - projectSol's newTest
 ![img](./readmeSrc/Task2-teacherTest.png)

@@ -155,11 +155,15 @@ void ExtendibleHash<K, V>::Insert(const K &key, const V &value) {
     }
 }
 
-
+template<typename K, typename V>
+ExtendibleHash<K, V>::ExtendibleHash() {
+    ExtendibleHash(64);
+}
 
 template class ExtendibleHash<page_id_t, Page *>;
 template class ExtendibleHash<Page *, std::list<Page *>::iterator>;
-// test purpose
+
+//// test purpose
 template class ExtendibleHash<int, std::string>;
 template class ExtendibleHash<int, std::list<int>::iterator>;
 template class ExtendibleHash<int, int>;

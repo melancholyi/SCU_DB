@@ -47,6 +47,7 @@ BufferPoolManager::~BufferPoolManager() {
  * pointer
  */
 Page *BufferPoolManager::FetchPage(page_id_t page_id) {
+    ////lock mutex
     std::lock_guard<std::mutex> lock(latch_);
     Page* tar_page  = nullptr;
     ////1. search hash table
@@ -73,11 +74,11 @@ Page *BufferPoolManager::FetchPage(page_id_t page_id) {
     page_table_->Insert(page_id,tar_page);
 
     ////4. Update page metadata, read page content from disk file and return page ptr
-    disk_manager_->ReadPage(page_id,tar_page->data_);
-    tar_page->pin_count_ = 1;
-    tar_page->is_dirty_ = false;
-    tar_page->page_id_= page_id;
-    return tar_page;
+    disk_manager_->ReadPage(page_id,tar_page->data_);////read page content from disk file
+    tar_page->pin_count_ = 1; ////  Update page metadata,
+    tar_page->is_dirty_ = false; ////  Update page metadata,
+    tar_page->page_id_= page_id; ////  Update page metadata,
+    return tar_page; //// return page ptr
 }
 
 /*
@@ -87,20 +88,25 @@ Page *BufferPoolManager::FetchPage(page_id_t page_id) {
  * dirty flag of this page
  */
 bool BufferPoolManager::UnpinPage(page_id_t page_id, bool is_dirty) {
+    //lock mutex
     std::lock_guard<std::mutex> lock(latch_);
     Page *tarPage = nullptr;
     ////Find tarPage
     page_table_->Find(page_id, tarPage);
-    if(tarPage == nullptr)
-        return false; //no exist
+    if(tarPage == nullptr){ ////no exist
+        return false;
+    }
 
-    tarPage->is_dirty_ = is_dirty; // set the dirty flag of this page
+    tarPage->is_dirty_ = is_dirty; //// set the dirty flag of this page
 
     ////if pin_count>0, decrement it and if it becomes zero, put it back to replacer if pin_count<=0 before this call, return false
-    if(tarPage->GetPinCount() <= 0)
+    if(tarPage->GetPinCount() <= 0){
         return false;
-    if(--tarPage->pin_count_ == 0)
+    }
+    if(--tarPage->pin_count_ == 0){
         replacer_->Insert(tarPage);
+    }
+
     return true;
 }
 
@@ -137,13 +143,14 @@ bool BufferPoolManager::FlushPage(page_id_t page_id) {
  * the page is found within page table, but pin_count != 0, return false
  */
 bool BufferPoolManager::DeletePage(page_id_t page_id) {
+    ////lock mutex
     std::lock_guard<std::mutex> lock(latch_);
     Page *tarPage = nullptr;
 
     ////find
     page_table_->Find(page_id,tarPage);
 
-    //not find
+    ////not find
     if (tarPage != nullptr) {
         if (tarPage->GetPinCount() > 0) {
             return false;
@@ -151,6 +158,7 @@ bool BufferPoolManager::DeletePage(page_id_t page_id) {
         /**First, if page is found within page
         * table, buffer pool manager should be reponsible for removing this entry out
         * of page table, reseting page metadata and adding back to free list.*/
+
         replacer_->Erase(tarPage); ////eraser
         page_table_->Remove(page_id); ////removing this entry out of page table
         tarPage->is_dirty_= false;
@@ -170,6 +178,7 @@ bool BufferPoolManager::DeletePage(page_id_t page_id) {
  * into page table. return nullptr if all the pages in pool are pinned
  */
 Page *BufferPoolManager::NewPage(page_id_t &page_id) {
+    // lock mutex
     std::lock_guard<std::mutex> lock(latch_);
     Page *tarPage = nullptr;
     tarPage = GetVictimPage();
@@ -187,7 +196,7 @@ Page *BufferPoolManager::NewPage(page_id_t &page_id) {
     page_table_->Remove(tarPage->GetPageId());
     page_table_->Insert(page_id,tarPage);
 
-    //4 updata membership
+    ////4 updata membership
     tarPage->page_id_ = page_id;
     tarPage->ResetMemory(); ////zero out memory
     tarPage->is_dirty_ = false;

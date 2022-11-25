@@ -40,7 +40,7 @@ public:
 
     // constructor
     explicit ExtendibleHash(size_t size);
-
+    explicit ExtendibleHash();
     // helper function to generate hash addressing
     size_t HashKey(const K &key) const;
 
