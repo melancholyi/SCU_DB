@@ -1,5 +1,6 @@
 # Chuangye Yan's ReadME
 ## Test result
+## 以下是工程原版的test结果
 ### Task1
 ![img](./readmeSrc/Task1.png)
 
@@ -11,13 +12,19 @@ LRU淘汰过程原理如下图所示：
 
 <br>
 
-Task2-testResult
+### Task2-testResult
 ![img](./readmeSrc/Task2-result.png)
 
 ### Task3-Result
 ![img](./readmeSrc/Task3-result.png)
 
+## 以下是老师发的答案中的test测试结果
+### Test1 result - projectSol's newTest
+![img](./readmeSrc/Task1-teacherTest.png)
 
+### Test2 result - projectSol's newTest
+
+### Test3 result - projectSol's newTest
 
 
 
